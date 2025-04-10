@@ -1,0 +1,52 @@
+[project]
+name = "bigquery-fastapi-mcp"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.9",
+    "fastapi-mcp>=0.1.7",
+    "google-cloud-bigquery>=3.31.0",
+    "pydantic>=2.11.3",
+    "pydantic-settings>=2.8.1",
+    "python-dotenv>=1.1.0",
+    "sqlparse>=0.5.3",
+    "typing-extensions>=4.13.1",
+    "uvicorn>=0.34.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=6.29.5",
+    "mypy>=1.15.0",
+    "ruff>=0.9.10",
+]
+
+[tool.ruff]
+line-length = 120
+# https://docs.astral.sh/ruff/rules/
+lint.select = [
+    "F", # pyflakes
+    "E", # pycodestyle
+    "W", # pycodestyle warnings
+    "I", # isort
+    # "D", # pydocstyle
+    "B", # flakes8-bugbear
+    "UP", # pyupgrade
+    "N", # pep8-naming
+    "C90", # mccabe
+]
+lint.fixable =["ALL"]
+lint.unfixable = [
+    "F401",  # module imported but unused
+    "F841",  # local variable is assigned to but never used
+]
+lint.ignore = [
+    "E501",  # line too long
+    "E402",  # module level import not at top of file
+    "N806",  # variable in function should be lowercase
+    "N803",  # argument name should be lowercase
+    "B008",  # do not perform function calls in argument defaults
+    "B904",  # checks for raise statements in exception handlers that lack a from clause.
+]
