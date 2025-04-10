@@ -17,6 +17,7 @@ async def list_datasets():
     try:
         client = get_client()
         datasets = list(client.list_datasets())
+        print(f"# datasets: {len(datasets)}")
 
         if not datasets:
             return []
