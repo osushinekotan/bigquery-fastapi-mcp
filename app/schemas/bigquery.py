@@ -34,7 +34,7 @@ class TableDetails(BaseModel):
 
 class QueryRequest(BaseModel):
     query: str
-    execute: bool = True
+    dry_run: bool = True
 
 
 class QueryResult(BaseModel):

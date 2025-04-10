@@ -79,7 +79,7 @@ Example request body:
 {
   "query": "SELECT * FROM `project.dataset.table` LIMIT 10",
   "max_bytes_billed": 1073741824,
-  "execute": true
+  "dry_run": true
 }
 ```
 

@@ -47,8 +47,8 @@ async def execute_query(query_request: QueryRequest):
                         detail=f"Dataset validation failed: Access to dataset '{table.dataset_id}' is not allowed",
                     )
 
-        # If execute=False or not specified, return dry_run results only
-        if query_request.execute is False:
+        # If dry_run=True, return the dry run job result
+        if query_request.dry_run is True:
             return QueryResult(
                 rows=[],
                 total_rows=0,
@@ -60,7 +60,7 @@ async def execute_query(query_request: QueryRequest):
                 statement_type=statement_type,
             )
 
-        # If execute=True, run the actual query
+        # If dry_run=False, run the actual query
         query_job = client.query(
             query_request.query,
             job_config=bigquery.QueryJobConfig(maximum_bytes_billed=MAX_BYTES_BILLED),
