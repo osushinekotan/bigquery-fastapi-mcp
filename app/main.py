@@ -24,11 +24,11 @@ async def root():
 add_mcp_server(
     app,  # Your FastAPI app
     mount_path="/mcp",  # Where to mount the MCP server
-    name="ChromaDB FastAPI MCP",  # Name for the MCP server
+    name="BigQuery FastAPI MCP",  # Name for the MCP server
     base_url=MCP_BASE_URL or f"http://{APP_HOST}:{APP_PORT}",  # Base URL for the MCP server
 )
 
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.main:app", host=APP_HOST, port=int(APP_PORT), reload=True)
