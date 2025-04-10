@@ -10,6 +10,7 @@ dependencies = [
     "google-cloud-bigquery>=3.31.0",
     "pydantic>=2.11.3",
     "pydantic-settings>=2.8.1",
+    "pytest>=8.3.5",
     "python-dotenv>=1.1.0",
     "sqlparse>=0.5.3",
     "typing-extensions>=4.13.1",
