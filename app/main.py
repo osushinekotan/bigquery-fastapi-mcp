@@ -1,5 +1,6 @@
+import httpx
 from fastapi import FastAPI
-from fastapi_mcp import add_mcp_server
+from fastapi_mcp import FastApiMCP
 
 from app.config.settings import APP_HOST, APP_PORT, MCP_BASE_URL
 from app.routers import datasets, health, query, tables
@@ -22,13 +23,14 @@ async def root():
 
 
 # Add MCP server to the FastAPI app
-add_mcp_server(
+mcp = FastApiMCP(
     app,  # Your FastAPI app
-    mount_path="/mcp",  # Where to mount the MCP server
     name="BigQuery FastAPI MCP",  # Name for the MCP server
     base_url=MCP_BASE_URL or f"http://{APP_HOST}:{APP_PORT}",  # Base URL for the MCP server
-    timeout=60,  # Timeout for the MCP server
+    http_client=httpx.AsyncClient(timeout=60),
 )
+mcp.mount()
+
 
 if __name__ == "__main__":
     import uvicorn

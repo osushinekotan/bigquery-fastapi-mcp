@@ -74,7 +74,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = ">=0.115.9" },
-    { name = "fastapi-mcp", specifier = ">=0.1.7" },
+    { name = "fastapi-mcp", specifier = ">=0.2.0" },
     { name = "google-cloud-bigquery", specifier = ">=3.31.0" },
     { name = "pydantic", specifier = ">=2.11.3" },
     { name = "pydantic-settings", specifier = ">=2.8.1" },
@@ -291,7 +291,7 @@ wheels = [
 
 [[package]]
 name = "fastapi-mcp"
-version = "0.1.8"
+version = "0.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi" },
@@ -305,9 +305,9 @@ dependencies = [
     { name = "typer" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4d/c4/b7857d660fe0a07e360eb51e8fc051499d67a2ea7af6e6fc57b8e8d0f574/fastapi_mcp-0.1.8.tar.gz", hash = "sha256:46fb043931685409451182b9c64de9ff8ddd4e228320f14afeaa06d32da697da", size = 64003 }
+sdist = { url = "https://files.pythonhosted.org/packages/fa/b7/eac68a88f8353402bd03cf68c1c8d945eb46210480ce2b9765f6f676d441/fastapi_mcp-0.2.0.tar.gz", hash = "sha256:05fa2460e24ca4c8737b0da3f653f41bd7d64711284f961abd3eac957c5bb5a4", size = 73572 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/66/ef/c2516a0e1b1b45293d87d1e6659c82e0da6fe5e887436e9a602c02401812/fastapi_mcp-0.1.8-py3-none-any.whl", hash = "sha256:4638de33390e1667813aad91b2080a63f72656b43d2862038c352131b92d2192", size = 15445 },
+    { url = "https://files.pythonhosted.org/packages/85/d0/320fc2a5fd9d8daa74f3384dd43cfb1913d07b04cfdf444cb39ba4d65e76/fastapi_mcp-0.2.0-py3-none-any.whl", hash = "sha256:97e3717140c3683cc9e03035430193ef42bdeaac4bd4e660df9a4b09e67a8bae", size = 18309 },
 ]
 
 [[package]]
