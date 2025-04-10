@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Query
 
 from app.config.settings import ALLOWED_DATASETS, PROJECT_ID
-from app.schemas.bigquery import Table, TableDetails, TableSchema
+from app.schemas.bigquery import ColumnDetails, Table, TableDetails
 from app.utils.bigquery_client import get_client
 
 router = APIRouter()
@@ -90,19 +90,33 @@ async def describe_table(dataset_id: str, table_id: str):
         if not table_info:
             raise HTTPException(status_code=404, detail=f"Table {dataset_id}.{table_id} not found")
 
-        # Get table schema
-        table_ref = client.dataset(dataset_id).table(table_id)
-        table = client.get_table(table_ref)
-
-        schemas = []
-        for field in table.schema:
-            schemas.append(TableSchema(name=field.name, type=field.field_type, mode=field.mode))
+        # Get column details
+        column_query = f"""
+        SELECT
+            column_name,
+            is_nullable,
+            data_type,
+            is_partitioning_column
+        FROM `{PROJECT_ID}.{dataset_id}`.INFORMATION_SCHEMA.COLUMNS
+        WHERE table_name = '{table_id}'
+        """
+        column_details = client.query(column_query).result()
+        columns = []
+        for row in column_details:
+            columns.append(
+                ColumnDetails(
+                    column_name=row.column_name,
+                    is_nullable=row.is_nullable,
+                    data_type=row.data_type,
+                    is_partitioning_column=row.is_partitioning_column,
+                )
+            )
 
         # Create response object
         table_details = TableDetails(
             table_id=table_id,
             dataset_id=dataset_id,
-            schemas=schemas,
+            columns=columns,
             row_count=table_info.row_count,
             size_bytes=table_info.size_bytes,
             size_gbytes=table_info.size_bytes / (1024 * 1024 * 1024),

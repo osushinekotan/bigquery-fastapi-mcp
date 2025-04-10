@@ -20,11 +20,18 @@ class TableSchema(BaseModel):
     description: str | None = None
 
 
+class ColumnDetails(BaseModel):
+    column_name: str
+    is_nullable: str
+    data_type: str
+    is_partitioning_column: str
+
+
 class TableDetails(BaseModel):
     table_id: str
     dataset_id: str
     description: str | None = None
-    schemas: list[TableSchema] = []
+    columns: list[ColumnDetails] | None = None
     row_count: int | None = None
     size_bytes: int | None = None
     size_gbytes: float | None = None
