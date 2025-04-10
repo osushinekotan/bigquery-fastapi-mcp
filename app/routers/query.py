@@ -52,8 +52,9 @@ async def execute_query(query_request: QueryRequest):
             return QueryResult(
                 rows=[],
                 total_rows=0,
-                schema=[],
+                schemas=[],
                 bytes_processed=dry_run_job.total_bytes_processed,
+                gbytes_processed=dry_run_job.total_bytes_processed / (1024 * 1024 * 1024),
                 job_id=dry_run_job.job_id,
                 referenced_tables=[f"{t.project}.{t.dataset_id}.{t.table_id}" for t in referenced_tables],
                 statement_type=statement_type,
@@ -69,9 +70,9 @@ async def execute_query(query_request: QueryRequest):
         results = query_job.result()
 
         # Extract schema information
-        schema = []
+        schemas = []
         for field in results.schema:
-            schema.append(
+            schemas.append(
                 TableSchema(name=field.name, type=field.field_type, mode=field.mode, description=field.description)
             )
 
@@ -82,8 +83,9 @@ async def execute_query(query_request: QueryRequest):
         return QueryResult(
             rows=rows,
             total_rows=len(rows),
-            schema=schema,
+            schemas=schemas,
             bytes_processed=query_job.total_bytes_processed,
+            gbytes_processed=dry_run_job.total_bytes_processed / (1024 * 1024 * 1024),
             job_id=query_job.job_id,
             referenced_tables=[f"{t.project}.{t.dataset_id}.{t.table_id}" for t in referenced_tables],
             statement_type=statement_type,
