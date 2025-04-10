@@ -40,12 +40,16 @@ def is_read_only_query(query: str) -> tuple[bool, str]:
     if first_token.value.upper() in forbidden_operations:
         return False, f"Operation '{first_token.value}' is not allowed"
 
-    # For more complex queries, check for forbidden keywords
-    query_upper = query.upper()
-    for operation in forbidden_operations:
-        if operation in query_upper:
-            # This is a simplified check. For production, consider a more sophisticated analysis
-            return False, f"Operation '{operation}' is not allowed"
+    parsed = sqlparse.parse(query)
+    for statement in parsed:
+        for token in statement.flatten():
+            if token.ttype not in (
+                sqlparse.tokens.Whitespace,
+                sqlparse.tokens.Comment.Single,
+                sqlparse.tokens.Comment.Multiline,
+            ):
+                if token.value.upper() in forbidden_operations:
+                    return False, f"Operation '{token.value}' is not allowed"
 
     return True, ""
 
@@ -61,20 +65,18 @@ def validate_dataset_references(query: str, allowed_datasets: set[str]) -> tuple
     Returns:
         Tuple[bool, str]: (is_valid, reason)
     """
-    # This is a simplified implementation
-    # For production, you would need a more sophisticated parser to detect all dataset references
-
-    # Example check: Look for dataset.table patterns
-    for dataset in allowed_datasets:
-        query = query.replace(f"`{dataset}`.", "").replace(f"{dataset}.", "")
+    if not allowed_datasets:
+        return True, ""
 
     # Check if any other dataset references remain
     parsed = sqlparse.parse(query)
     for statement in parsed:
         for token in statement.flatten():
-            if token.ttype in (None,) and "." in token.value:
+            if (token.ttype) in (None, sqlparse.tokens.Name) and "." in token.value:
                 parts = token.value.strip("`").split(".")
-                if len(parts) >= 2 and parts[0] not in allowed_datasets:
+                if len(parts) == 2 and parts[0] not in allowed_datasets:
                     return False, f"Reference to unauthorized dataset: {parts[0]}"
+                elif len(parts) == 3 and parts[1] not in allowed_datasets:
+                    return False, f"Reference to unauthorized dataset: {parts[1]}"
 
     return True, ""
