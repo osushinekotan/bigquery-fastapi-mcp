@@ -1,5 +1,7 @@
 from fastapi import FastAPI
+from fastapi_mcp import add_mcp_server
 
+from app.config.settings import APP_HOST, APP_PORT, MCP_BASE_URL
 from app.routers import datasets, query, tables
 
 app = FastAPI(
@@ -17,6 +19,14 @@ app.include_router(query.router, prefix="/bigquery", tags=["query"])
 async def root():
     return {"message": "Welcome to BigQuery FastAPI"}
 
+
+# Add MCP server to the FastAPI app
+add_mcp_server(
+    app,  # Your FastAPI app
+    mount_path="/mcp",  # Where to mount the MCP server
+    name="ChromaDB FastAPI MCP",  # Name for the MCP server
+    base_url=MCP_BASE_URL or f"http://{APP_HOST}:{APP_PORT}",  # Base URL for the MCP server
+)
 
 if __name__ == "__main__":
     import uvicorn
