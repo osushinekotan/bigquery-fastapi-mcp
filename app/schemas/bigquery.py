@@ -33,7 +33,7 @@ class TableDetails(BaseModel):
 
 class QueryRequest(BaseModel):
     query: str
-    dry_run: bool | None = False
+    execute: bool = True
 
 
 class QueryResult(BaseModel):
@@ -42,3 +42,5 @@ class QueryResult(BaseModel):
     schema: list[TableSchema]
     bytes_processed: int
     job_id: str | None = None
+    statement_type: str | None = None
+    referenced_tables: list[str] | None = None

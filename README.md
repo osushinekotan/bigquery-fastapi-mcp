@@ -47,6 +47,12 @@ gcloud auth application-default login
 uvicorn app.main:app --reload
 ```
 
+or
+
+```bash
+uv run python app/main.py
+```
+
 The API will be available at http://localhost:8000
 
 API documentation will be available at http://localhost:8000/docs
@@ -73,7 +79,7 @@ Example request body:
 {
   "query": "SELECT * FROM `project.dataset.table` LIMIT 10",
   "max_bytes_billed": 1073741824,
-  "dry_run": false
+  "execute": true
 }
 ```
 

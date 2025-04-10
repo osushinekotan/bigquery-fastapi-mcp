@@ -1,10 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from google.cloud import bigquery
 
-from app.config.settings import ALLOWED_DATASETS, MAX_BYTES_BILLED
+from app.config.settings import ALLOWED_DATASETS, ALLOWED_STATEMENTS, MAX_BYTES_BILLED
 from app.schemas.bigquery import QueryRequest, QueryResult, TableSchema
 from app.utils.bigquery_client import get_client
-from app.utils.query_validator import is_read_only_query, validate_dataset_references
 
 router = APIRouter()
 
@@ -12,43 +11,59 @@ router = APIRouter()
 @router.post("/query", response_model=QueryResult)
 async def execute_query(query_request: QueryRequest):
     """
-    Execute a BigQuery query with validation.
+    Validate a BigQuery query and optionally execute it.
 
     Args:
         query_request: The query request containing the SQL and options
     """
     try:
-        # Validate query is read-only
-        is_valid, reason = is_read_only_query(query_request.query)
-        if not is_valid:
-            raise HTTPException(status_code=403, detail=f"Query validation failed: {reason}")
-
-        # Validate dataset references
-        if ALLOWED_DATASETS:
-            is_valid, reason = validate_dataset_references(query_request.query, ALLOWED_DATASETS)
-            if not is_valid:
-                raise HTTPException(status_code=403, detail=f"Dataset validation failed: {reason}")
-
         client = get_client()
 
-        # Configure job options
-        job_config = bigquery.QueryJobConfig()
-        job_config.maximum_bytes_billed = MAX_BYTES_BILLED
-        if query_request.dry_run:
-            job_config.dry_run = True
+        # Always run as dry_run first to validate
+        dry_run_job = client.query(
+            query_request.query,
+            job_config=bigquery.QueryJobConfig(
+                dry_run=True,
+                use_query_cache=False,
+                maximum_bytes_billed=MAX_BYTES_BILLED,
+            ),
+        )
 
-        # Execute the query
-        query_job = client.query(query_request.query, job_config=job_config)
+        # Get statement type and validate if read-only
+        statement_type = dry_run_job.statement_type
+        if statement_type not in ALLOWED_STATEMENTS:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Query validation failed: Only SELECT queries are allowed. Found: {statement_type}",
+            )
 
-        if query_request.dry_run:
-            # For dry run, return estimated bytes
+        # Get referenced tables and validate allowed datasets
+        referenced_tables = dry_run_job.referenced_tables
+        if ALLOWED_DATASETS:
+            for table in referenced_tables:
+                if table.dataset_id not in ALLOWED_DATASETS:
+                    raise HTTPException(
+                        status_code=403,
+                        detail=f"Dataset validation failed: Access to dataset '{table.dataset_id}' is not allowed",
+                    )
+
+        # If execute=False or not specified, return dry_run results only
+        if query_request.execute is False:
             return QueryResult(
                 rows=[],
                 total_rows=0,
                 schema=[],
-                bytes_processed=query_job.total_bytes_processed,
-                job_id=query_job.job_id,
+                bytes_processed=dry_run_job.total_bytes_processed,
+                job_id=dry_run_job.job_id,
+                referenced_tables=[f"{t.project}.{t.dataset_id}.{t.table_id}" for t in referenced_tables],
+                statement_type=statement_type,
             )
+
+        # If execute=True, run the actual query
+        query_job = client.query(
+            query_request.query,
+            job_config=bigquery.QueryJobConfig(maximum_bytes_billed=MAX_BYTES_BILLED),
+        )
 
         # Wait for the query to complete
         results = query_job.result()
@@ -70,6 +85,8 @@ async def execute_query(query_request: QueryRequest):
             schema=schema,
             bytes_processed=query_job.total_bytes_processed,
             job_id=query_job.job_id,
+            referenced_tables=[f"{t.project}.{t.dataset_id}.{t.table_id}" for t in referenced_tables],
+            statement_type=statement_type,
         )
 
     except Exception as e:
