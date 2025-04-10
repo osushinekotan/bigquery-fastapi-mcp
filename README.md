@@ -44,13 +44,13 @@ gcloud auth application-default login
 ## Running the Application
 
 ```bash
-uvicorn app.main:app --reload
+uv run uvicorn app.main:app --reload
 ```
 
 or
 
 ```bash
-uv run python app/main.py
+uv run python -m app.main
 ```
 
 The API will be available at http://localhost:8000
