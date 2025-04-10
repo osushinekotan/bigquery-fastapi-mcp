@@ -28,6 +28,7 @@ async def list_tables(dataset_id: str | None = Query(None, description="Filter t
         if dataset_id:
             dataset_ref = client.dataset(dataset_id)
             bq_tables = list(client.list_tables(dataset_ref))
+            print(f"# bq_tables: {len(bq_tables)}")
 
             for table in bq_tables:
                 tables.append(Table(table_id=table.table_id, dataset_id=dataset_id))
@@ -40,6 +41,7 @@ async def list_tables(dataset_id: str | None = Query(None, description="Filter t
             for ds_id in datasets_to_query:
                 dataset_ref = client.dataset(ds_id)
                 bq_tables = list(client.list_tables(dataset_ref))
+                print(f"# bq_tables: {len(bq_tables)}")
 
                 for table in bq_tables:
                     tables.append(Table(table_id=table.table_id, dataset_id=ds_id))
@@ -70,17 +72,14 @@ async def describe_table(dataset_id: str, table_id: str):
         # Query INFORMATION_SCHEMA.TABLES for table metadata
         schema_query = f"""
         SELECT
-          table_name,
-          table_type,
-          creation_time,
-          last_modified_time,
+          DATE(TIMESTAMP_MILLIS(creation_time)) AS creation_date,
+          DATE(TIMESTAMP_MILLIS(last_modified_time)) AS last_modified_date,
           row_count,
-          size_bytes,
-          description
+          size_bytes
         FROM
-          `{PROJECT_ID}.{dataset_id}.INFORMATION_SCHEMA.TABLES`
+          `{PROJECT_ID}.{dataset_id}.__TABLES__`
         WHERE
-          table_name = '{table_id}'
+          table_id = '{table_id}'
         """
 
         table_info = None
@@ -95,22 +94,20 @@ async def describe_table(dataset_id: str, table_id: str):
         table_ref = client.dataset(dataset_id).table(table_id)
         table = client.get_table(table_ref)
 
-        schema = []
+        schemas = []
         for field in table.schema:
-            schema.append(
-                TableSchema(name=field.name, type=field.field_type, mode=field.mode, description=field.description)
-            )
+            schemas.append(TableSchema(name=field.name, type=field.field_type, mode=field.mode))
 
         # Create response object
         table_details = TableDetails(
             table_id=table_id,
             dataset_id=dataset_id,
-            description=table_info.description,
-            schema=schema,
+            schemas=schemas,
             row_count=table_info.row_count,
             size_bytes=table_info.size_bytes,
-            created=table_info.creation_time.isoformat() if table_info.creation_time else None,
-            last_modified=table_info.last_modified_time.isoformat() if table_info.last_modified_time else None,
+            size_gbytes=table_info.size_bytes / (1024 * 1024 * 1024),
+            created=str(table_info.creation_date) if table_info.creation_date else None,
+            last_modified=str(table_info.last_modified_date) if table_info.last_modified_date else None,
         )
 
         return table_details
