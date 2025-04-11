@@ -6,8 +6,8 @@ from app.config.settings import APP_HOST, APP_PORT, MCP_BASE_URL
 from app.routers import datasets, health, query, tables
 
 app = FastAPI(
-    title="BigQuery API",
-    description="API for interacting with Google BigQuery",
+    title="Read Only BigQuery API",
+    description="API for querying BigQuery datasets and tables",
     version="0.1.0",
 )
 
