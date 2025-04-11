@@ -1,19 +1,31 @@
 # BigQuery FastAPI MCP
 
-## Setup
+A lightweight, secure API & MCP for accessing and querying Google BigQuery datasets
 
-### Prerequisites
+
+## FastAPI
+
+### Features
+
+- Read-only access to BigQuery datasets and tables
+- Security features including query validation and dataset access control
+- Full support for standard BigQuery queries with cost control
+- RESTful API with comprehensive documentation
+
+### Setup
+
+#### Prerequisites
 
 - Python 3.11 or higher
 - Google Cloud Project with BigQuery enabled
 - Service account with BigQuery access
 
-### Installation
+#### Installation
 
 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/bigquery-fastapi-mcp.git
+git clone https://github.com/osushinekotan/bigquery-fastapi-mcp
 cd bigquery-fastapi-mcp
 ```
 
@@ -29,6 +41,8 @@ uv sync
 BQ_PROJECT_ID=your-gcp-project-id
 BQ_ALLOWED_DATASETS=dataset1,dataset2,dataset3
 BQ_MAX_BYTES_BILLED=1073741824  # 1GB default
+APP_HOST=127.0.0.1
+APP_PORT=8000
 ```
 
 4. Set up GCP authentication
@@ -41,7 +55,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json
 gcloud auth application-default login
 ```
 
-## Running the Application
+### Running the Application
 
 ```bash
 uv run uvicorn app.main:app --reload
@@ -57,19 +71,24 @@ The API will be available at http://localhost:8000
 
 API documentation will be available at http://localhost:8000/docs
 
-## API Endpoints
+### API Endpoints
 
-### Datasets
+#### Health Check
 
-- `GET /bigquery/datasets` - List all datasets in the project (filtered by allowed datasets)
+- `GET /bigquery/health` - Verify the API is running
 
-### Tables
+#### Datasets
+
+- `GET /bigquery/list_datasets` - List all datasets in the project (filtered by allowed datasets)
+- `GET /bigquery/allowed_datasets` - Get configured allowed datasets
+
+#### Tables
 
 - `GET /bigquery/tables` - List all tables in allowed datasets
 - `GET /bigquery/tables?dataset_id=your_dataset` - List tables in a specific dataset
 - `GET /bigquery/tables/{dataset_id}/{table_id}` - Get detailed information about a specific table
 
-### Query
+#### Query
 
 - `POST /bigquery/query` - Execute a BigQuery query
 
@@ -78,16 +97,15 @@ Example request body:
 ```json
 {
   "query": "SELECT * FROM `project.dataset.table` LIMIT 10",
-  "max_bytes_billed": 1073741824,
   "dry_run": true
 }
 ```
 
-## Security Features
+### Security Features
 
-- Read-only query validation
-- Dataset access control
-- Maximum billable bytes limit
+- Read-only query validation (only SELECT statements are allowed)
+- Dataset access control through environment configuration
+- Maximum billable bytes limit with configurable thresholds
 
 
 ## MCP server
