@@ -1,7 +1,6 @@
-# BigQuery FastAPI MCP
+# BigQuery & Tavily FastAPI MCP
 
-A lightweight, secure API & MCP for accessing and querying Google BigQuery datasets
-
+A lightweight, secure API & MCP for accessing and querying Google BigQuery datasets and Tavily search
 
 ## FastAPI
 
@@ -10,6 +9,7 @@ A lightweight, secure API & MCP for accessing and querying Google BigQuery datas
 - Read-only access to BigQuery datasets and tables
 - Security features including query validation and dataset access control
 - Full support for standard BigQuery queries with cost control
+- Tavily search and web content extraction capabilities
 - RESTful API with comprehensive documentation
 
 ### Setup
@@ -19,6 +19,7 @@ A lightweight, secure API & MCP for accessing and querying Google BigQuery datas
 - Python 3.11 or higher
 - Google Cloud Project with BigQuery enabled
 - Service account with BigQuery access
+- Tavily API key for search functionality
 
 #### Installation
 
@@ -41,6 +42,7 @@ uv sync
 BQ_PROJECT_ID=your-gcp-project-id
 BQ_ALLOWED_DATASETS=dataset1,dataset2,dataset3
 BQ_MAX_BYTES_BILLED=1073741824  # 1GB default
+TAVILY_API_KEY=your-tavily-api-key
 APP_HOST=127.0.0.1
 APP_PORT=8000
 ```
@@ -75,20 +77,20 @@ API documentation will be available at http://localhost:8000/docs
 
 #### Health Check
 
-- `GET /bigquery/health` - Verify the API is running
+- `GET /health/health` - Verify the API is running
 
-#### Datasets
+#### BigQuery Datasets
 
 - `GET /bigquery/list_datasets` - List all datasets in the project (filtered by allowed datasets)
 - `GET /bigquery/allowed_datasets` - Get configured allowed datasets
 
-#### Tables
+#### BigQuery Tables
 
 - `GET /bigquery/tables` - List all tables in allowed datasets
 - `GET /bigquery/tables?dataset_id=your_dataset` - List tables in a specific dataset
 - `GET /bigquery/tables/{dataset_id}/{table_id}` - Get detailed information about a specific table
 
-#### Query
+#### BigQuery Query
 
 - `POST /bigquery/query` - Execute a BigQuery query
 
@@ -101,12 +103,36 @@ Example request body:
 }
 ```
 
+#### Tavily Search
+
+- `POST /search/search` - Search the web using Tavily
+
+Example request body:
+
+```json
+{
+  "query": "latest developments in AI",
+  "max_results": 5
+}
+```
+
+#### Tavily Extract
+
+- `POST /search/extract` - Extract content from web URLs
+
+Example request body:
+
+```json
+{
+  "urls": ["https://example.com/article1", "https://example.com/article2"]
+}
+```
+
 ### Security Features
 
 - Read-only query validation (only SELECT statements are allowed)
 - Dataset access control through environment configuration
 - Maximum billable bytes limit with configurable thresholds
-
 
 ## MCP server
 
@@ -133,38 +159,41 @@ If your MCP client does not support SSE, for example Claude Desktop:
 3. Add in Claude Desktop MCP config file (`claude_desktop_config.json`):
 
 On Windows:
+
 ```json
 {
   "mcpServers": {
     "my-api-mcp-proxy": {
-        "command": "mcp-proxy",
-        "args": ["http://127.0.0.1:8000/mcp"]
+      "command": "mcp-proxy",
+      "args": ["http://127.0.0.1:8000/mcp"]
     }
   }
 }
 ```
+
 On MacOS:
 
 Find the path to mcp-proxy by running in Terminal: `which mcp-proxy`.
+
 ```json
 {
   "mcpServers": {
     "my-api-mcp-proxy": {
-        "command": "/Full/Path/To/Your/Executable/mcp-proxy",
-        "args": ["http://127.0.0.1:8000/mcp"]
+      "command": "/Full/Path/To/Your/Executable/mcp-proxy",
+      "args": ["http://127.0.0.1:8000/mcp"]
     }
   }
 }
 ```
 
-
 Find the path to mcp-proxy by running in Terminal: `which uvx`.
+
 ```json
 {
   "mcpServers": {
     "my-api-mcp-proxy": {
-        "command": "/Full/Path/To/Your/uvx",
-        "args": ["mcp-proxy", "http://127.0.0.1:8000/mcp"]
+      "command": "/Full/Path/To/Your/uvx",
+      "args": ["mcp-proxy", "http://127.0.0.1:8000/mcp"]
     }
   }
 }
