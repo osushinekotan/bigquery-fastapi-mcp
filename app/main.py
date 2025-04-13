@@ -8,8 +8,8 @@ from app.routers.bigquery import datasets, query, tables
 from app.routers.search import tavily
 
 app = FastAPI(
-    title="Read Only BigQuery API",
-    description="API for querying BigQuery datasets and tables",
+    title="Query API",
+    description="API for querying BigQuery & Tavily",
     version="0.1.0",
 )
 
@@ -25,10 +25,9 @@ async def root():
     return {"message": "Welcome to BigQuery FastAPI"}
 
 
-# Add MCP server to the FastAPI app
 mcp = FastApiMCP(
     app,  # Your FastAPI app
-    name="BigQuery FastAPI MCP",  # Name for the MCP server
+    name="Query FastAPI MCP",  # Name for the MCP server
     base_url=MCP_BASE_URL or f"http://{APP_HOST}:{APP_PORT}",  # Base URL for the MCP server
     http_client=httpx.AsyncClient(timeout=60),
 )
