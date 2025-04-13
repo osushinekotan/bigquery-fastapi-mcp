@@ -13,6 +13,7 @@ dependencies = [
     "pytest>=8.3.5",
     "python-dotenv>=1.1.0",
     "sqlparse>=0.5.3",
+    "tavily-python>=0.5.4",
     "typing-extensions>=4.13.1",
     "uvicorn>=0.34.0",
 ]
