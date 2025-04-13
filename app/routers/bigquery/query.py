@@ -39,7 +39,7 @@ async def execute_query(query_request: QueryRequest):
 
         # Get referenced tables and validate allowed datasets
         referenced_tables = dry_run_job.referenced_tables
-        if ALLOWED_DATASETS:
+        if ALLOWED_DATASETS is not None:
             for table in referenced_tables:
                 if table.dataset_id not in ALLOWED_DATASETS:
                     raise HTTPException(

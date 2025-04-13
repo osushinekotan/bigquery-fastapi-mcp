@@ -27,7 +27,7 @@ def list_datasets():
             dataset_id = dataset.dataset_id
 
             # Filter by allowed datasets if configured
-            if ALLOWED_DATASETS and dataset_id not in ALLOWED_DATASETS:
+            if ALLOWED_DATASETS is not None and dataset_id not in ALLOWED_DATASETS:
                 continue
 
             result.append(Dataset(dataset_id=dataset_id, friendly_name=dataset.friendly_name))
@@ -44,7 +44,7 @@ def get_allowed_datasets():
     """
     try:
         if not ALLOWED_DATASETS:
-            return []
+            return [Dataset(dataset_id="*", friendly_name="All datasets allowed")]
 
         result = []
         for dataset_id in ALLOWED_DATASETS:

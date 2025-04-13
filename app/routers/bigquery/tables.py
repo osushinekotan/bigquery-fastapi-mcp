@@ -19,7 +19,7 @@ async def list_tables(dataset_id: str | None = Query(None, description="Filter t
         client = get_client()
 
         # Check if dataset is allowed if filtering is applied
-        if dataset_id and ALLOWED_DATASETS and dataset_id not in ALLOWED_DATASETS:
+        if dataset_id and ALLOWED_DATASETS is not None and dataset_id not in ALLOWED_DATASETS:
             raise HTTPException(status_code=403, detail=f"Access to dataset '{dataset_id}' is not allowed")
 
         tables = []
@@ -35,7 +35,7 @@ async def list_tables(dataset_id: str | None = Query(None, description="Filter t
         else:
             # If no dataset specified, list tables from all allowed datasets
             datasets_to_query = (
-                ALLOWED_DATASETS if ALLOWED_DATASETS else [ds.dataset_id for ds in client.list_datasets()]
+                ALLOWED_DATASETS if ALLOWED_DATASETS is not None else [ds.dataset_id for ds in client.list_datasets()]
             )
 
             for ds_id in datasets_to_query:
@@ -64,7 +64,7 @@ async def describe_table(dataset_id: str, table_id: str):
     """
     try:
         # Check if dataset is allowed
-        if ALLOWED_DATASETS and dataset_id not in ALLOWED_DATASETS:
+        if ALLOWED_DATASETS is not None and dataset_id not in ALLOWED_DATASETS:
             raise HTTPException(status_code=403, detail=f"Access to dataset '{dataset_id}' is not allowed")
 
         client = get_client()
