@@ -8,7 +8,7 @@ PROJECT_ID = os.getenv("BQ_PROJECT_ID", "")
 
 # Set to None if BQ_ALLOWED_DATASETS is an empty string, None or ‘*’ (all allowed)
 bq_allowed_datasets = os.getenv("BQ_ALLOWED_DATASETS", "")
-BQ_ALLOWED_DATASETS: set[str] | None = (
+ALLOWED_DATASETS: set[str] | None = (
     None
     if not bq_allowed_datasets or bq_allowed_datasets == "*"
     else {dataset.strip() for dataset in bq_allowed_datasets.split(",") if dataset.strip()}
