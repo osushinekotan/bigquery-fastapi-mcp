@@ -25,10 +25,10 @@ async def search(request: TavilySearchRequest):
         response = client.search(
             query=request.query,
             max_results=request.max_results,
-            include_answer=request.include_answer,
-            include_raw_content=request.include_raw_content,
-            include_images=request.include_images,
-            search_depth=request.search_depth,
+            include_answer=False,
+            include_raw_content=False,
+            include_images=False,
+            search_depth="basic",
         )
 
         return TavilySearchResult(**response)
@@ -47,14 +47,7 @@ async def extract(request: TavilyExtractRequest):
     try:
         client = get_client()
 
-        params = {
-            "urls": request.urls,
-            "include_raw_content": request.include_raw_content,
-        }
-
-        if request.max_tokens:
-            params["max_tokens"] = request.max_tokens
-
+        params = {"urls": request.urls}
         results = client.extract(**params)
 
         if not isinstance(results, list):
