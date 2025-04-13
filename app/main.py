@@ -3,7 +3,9 @@ from fastapi import FastAPI
 from fastapi_mcp import FastApiMCP
 
 from app.config.settings import APP_HOST, APP_PORT, MCP_BASE_URL
-from app.routers import datasets, health, query, tables
+from app.routers import health
+from app.routers.bigquery import datasets, query, tables
+from app.routers.search import tavily
 
 app = FastAPI(
     title="Read Only BigQuery API",
@@ -11,10 +13,11 @@ app = FastAPI(
     version="0.1.0",
 )
 
-app.include_router(datasets.router, prefix="/bigquery", tags=["datasets"])
-app.include_router(tables.router, prefix="/bigquery", tags=["tables"])
-app.include_router(query.router, prefix="/bigquery", tags=["query"])
-app.include_router(health.router, prefix="/bigquery", tags=["health"])
+app.include_router(datasets.router, prefix="/bigquery", tags=["bigquery"])
+app.include_router(tables.router, prefix="/bigquery", tags=["bigquery"])
+app.include_router(query.router, prefix="/bigquery", tags=["bigquery"])
+app.include_router(tavily.router, prefix="/search", tags=["search"])
+app.include_router(health.router, prefix="/health", tags=["system"])
 
 
 @app.get("/")
