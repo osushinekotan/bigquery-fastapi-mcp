@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi_mcp import FastApiMCP
 
 from app.config.settings import APP_HOST, APP_PORT, MCP_BASE_URL
-from app.routers import health
+from app.routers import health, sequential_thinking
 from app.routers.bigquery import datasets, query, tables
 
 app = FastAPI(
@@ -16,6 +16,7 @@ app.include_router(datasets.router, prefix="/bigquery", tags=["bigquery"])
 app.include_router(tables.router, prefix="/bigquery", tags=["bigquery"])
 app.include_router(query.router, prefix="/bigquery", tags=["bigquery"])
 app.include_router(health.router, prefix="/health", tags=["system"])
+app.include_router(sequential_thinking.router, prefix="/sequential-thinking", tags=["sequential-thinking"])
 
 
 @app.get("/")
