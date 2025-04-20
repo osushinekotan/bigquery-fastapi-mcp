@@ -17,8 +17,6 @@ MAX_BYTES_BILLED = int(os.getenv("BQ_MAX_BYTES_BILLED", "1073741824"))  # Defaul
 
 ALLOWED_STATEMENTS: list[str] = ["SELECT"]
 
-# TAVILY API
-TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
 
 # app config
 MCP_BASE_URL = os.getenv("MCP_BASE_URL")
