@@ -133,7 +133,7 @@ async def process_thought(thought: ThoughtBase):
 
 
 @router.get(
-    "/sequential-thinking/history",
+    "/history",
     response_model=list[ThoughtHistory],
     operation_id="sequential_thinking_history",
 )
@@ -147,7 +147,7 @@ async def get_thought_history():
 
 
 @router.get(
-    "/sequential-thinking/branch/{branch_id}",
+    "/branch/{branch_id}",
     response_model=BranchDetails,
     operation_id="sequential_thinking_branch",
 )
@@ -167,7 +167,7 @@ async def get_branch_thoughts(branch_id: str):
     return BranchDetails(id=branch_id, thoughts=branches[branch_id])
 
 
-@router.get("/sequential-thinking/metadata", operation_id="sequential_thinking_metadata")
+@router.get("/metadata", operation_id="sequential_thinking_metadata")
 async def get_metadata():
     """
     Get metadata about the sequential thinking process.
