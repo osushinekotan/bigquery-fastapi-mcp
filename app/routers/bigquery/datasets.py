@@ -7,7 +7,7 @@ from app.utils.bigquery_client import get_client
 router = APIRouter()
 
 
-@router.get("/list_datasets", response_model=list[Dataset])
+@router.get("/list_datasets", response_model=list[Dataset], operation_id="list_bigquery_datasets")
 def list_datasets():
     """
     List all datasets in the BigQuery project.
@@ -37,7 +37,7 @@ def list_datasets():
         raise HTTPException(status_code=500, detail=f"Error listing datasets: {str(e)}")
 
 
-@router.get("/allowed_datasets", response_model=list[Dataset])
+@router.get("/allowed_datasets", response_model=list[Dataset], operation_id="get_allowed_bigquery_datasets")
 def get_allowed_datasets():
     """
     Returns the allowed datasets configured in the environment.

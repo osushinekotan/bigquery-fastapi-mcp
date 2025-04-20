@@ -7,7 +7,7 @@ from app.utils.bigquery_client import get_client
 router = APIRouter()
 
 
-@router.get("/tables", response_model=list[Table])
+@router.get("/tables", response_model=list[Table], operation_id="list_bigquery_tables")
 async def list_tables(dataset_id: str | None = Query(None, description="Filter tables by dataset ID")):
     """
     List tables in BigQuery project, optionally filtered by dataset.
@@ -53,7 +53,7 @@ async def list_tables(dataset_id: str | None = Query(None, description="Filter t
         raise HTTPException(status_code=500, detail=f"Error listing tables: {str(e)}")
 
 
-@router.get("/tables/{dataset_id}/{table_id}", response_model=TableDetails)
+@router.get("/tables/{dataset_id}/{table_id}", response_model=TableDetails, operation_id="describe_bigquery_table")
 async def describe_table(dataset_id: str, table_id: str):
     """
     Get detailed information about a specific table using INFORMATION_SCHEMA.

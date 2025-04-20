@@ -8,7 +8,7 @@ from app.utils.bigquery_client import get_client
 router = APIRouter()
 
 
-@router.post("/query", response_model=QueryResult)
+@router.post("/query", response_model=QueryResult, operation_id="execute_bigquery_query")
 async def execute_query(query_request: QueryRequest):
     """
     Validate a BigQuery query and optionally execute it.
