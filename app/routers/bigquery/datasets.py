@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from google.cloud import bigquery
 
-from app.clients.bigquery import get_client
+from app.clients.bigquery import get_bigquery_client
 from app.config.settings import ALLOWED_DATASETS
 from app.schemas.bigquery import Dataset
 
@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.get("/list_datasets", response_model=list[Dataset], operation_id="list_bigquery_datasets")
-def list_datasets(client: bigquery.Client = Depends(get_client)):
+def list_datasets(client: bigquery.Client = Depends(get_bigquery_client)):
     """
     List all datasets in the BigQuery project.
 

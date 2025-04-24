@@ -3,13 +3,13 @@ from google.cloud import bigquery
 
 from app.config.settings import ALLOWED_DATASETS, ALLOWED_STATEMENTS, MAX_BYTES_BILLED
 from app.schemas.bigquery import QueryRequest, QueryResult, TableSchema
-from app.utils.bigquery_client import get_client
+from app.utils.bigquery_client import get_bigquery_client
 
 router = APIRouter()
 
 
 @router.post("/query", response_model=QueryResult, operation_id="execute_bigquery_query")
-async def execute_query(query_request: QueryRequest, client: bigquery.Client = Depends(get_client)):
+async def execute_query(query_request: QueryRequest, client: bigquery.Client = Depends(get_bigquery_client)):
     """
     Validate a BigQuery query and optionally execute it.
 

@@ -3,7 +3,7 @@ from google.cloud import bigquery
 
 from app.config.settings import ALLOWED_DATASETS, PROJECT_ID
 from app.schemas.bigquery import ColumnDetails, Table, TableDetails
-from app.utils.bigquery_client import get_client
+from app.utils.bigquery_client import get_bigquery_client
 
 router = APIRouter()
 
@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/tables", response_model=list[Table], operation_id="list_bigquery_tables")
 async def list_tables(
     dataset_id: str | None = Query(None, description="Filter tables by dataset ID"),
-    client: bigquery.Client = Depends(get_client),
+    client: bigquery.Client = Depends(get_bigquery_client),
 ):
     """
     List tables in BigQuery project, optionally filtered by dataset.
@@ -56,7 +56,7 @@ async def list_tables(
 
 
 @router.get("/tables/{dataset_id}/{table_id}", response_model=TableDetails, operation_id="describe_bigquery_table")
-async def describe_table(dataset_id: str, table_id: str, client: bigquery.Client = Depends(get_client)):
+async def describe_table(dataset_id: str, table_id: str, client: bigquery.Client = Depends(get_bigquery_client)):
     """
     Get detailed information about a specific table using INFORMATION_SCHEMA.
 
