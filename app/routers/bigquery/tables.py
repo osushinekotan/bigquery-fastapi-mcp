@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from google.cloud import bigquery
 
+from app.clients.bigquery import get_bigquery_client
 from app.config.settings import ALLOWED_DATASETS, PROJECT_ID
 from app.schemas.bigquery import ColumnDetails, Table, TableDetails
-from app.utils.bigquery_client import get_bigquery_client
 
 router = APIRouter()
 
