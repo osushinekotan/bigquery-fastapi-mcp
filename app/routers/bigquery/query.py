@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from google.cloud import bigquery
 
 from app.config.settings import ALLOWED_DATASETS, ALLOWED_STATEMENTS, MAX_BYTES_BILLED
@@ -9,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/query", response_model=QueryResult, operation_id="execute_bigquery_query")
-async def execute_query(query_request: QueryRequest):
+async def execute_query(query_request: QueryRequest, client: bigquery.Client = Depends(get_client)):
     """
     Validate a BigQuery query and optionally execute it.
 
@@ -17,8 +17,6 @@ async def execute_query(query_request: QueryRequest):
         query_request: The query request containing the SQL and options
     """
     try:
-        client = get_client()
-
         # Always run as dry_run first to validate
         dry_run_job = client.query(
             query_request.query,

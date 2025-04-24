@@ -1,15 +1,34 @@
+from contextlib import asynccontextmanager
+
 import httpx
 from fastapi import FastAPI
 from fastapi_mcp import FastApiMCP
 
+from app.clients.bigquery import init_bigquery_client
 from app.config.settings import APP_HOST, APP_PORT
 from app.routers import health, sequential_thinking
 from app.routers.bigquery import datasets, query, tables
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Lifespan event handler for the FastAPI application.
+
+    This function initializes the BigQuery client when the application starts
+    and cleans up resources when the application stops.
+    """
+    # Initialize the BigQuery client
+    app.state.bigquery_client = init_bigquery_client()
+
+    yield
+
 
 app = FastAPI(
     title="Servers",
     description="FastAPI for MCP Servers",
     version="0.1.0",
+    lifespan=lifespan,
 )
 
 app.include_router(datasets.router, prefix="/bigquery", tags=["bigquery"])

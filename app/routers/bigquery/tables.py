@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from google.cloud import bigquery
 
 from app.config.settings import ALLOWED_DATASETS, PROJECT_ID
 from app.schemas.bigquery import ColumnDetails, Table, TableDetails
@@ -8,7 +9,10 @@ router = APIRouter()
 
 
 @router.get("/tables", response_model=list[Table], operation_id="list_bigquery_tables")
-async def list_tables(dataset_id: str | None = Query(None, description="Filter tables by dataset ID")):
+async def list_tables(
+    dataset_id: str | None = Query(None, description="Filter tables by dataset ID"),
+    client: bigquery.Client = Depends(get_client),
+):
     """
     List tables in BigQuery project, optionally filtered by dataset.
 
@@ -16,8 +20,6 @@ async def list_tables(dataset_id: str | None = Query(None, description="Filter t
         dataset_id: Optional dataset ID to filter tables
     """
     try:
-        client = get_client()
-
         # Check if dataset is allowed if filtering is applied
         if dataset_id and ALLOWED_DATASETS is not None and dataset_id not in ALLOWED_DATASETS:
             raise HTTPException(status_code=403, detail=f"Access to dataset '{dataset_id}' is not allowed")
@@ -54,7 +56,7 @@ async def list_tables(dataset_id: str | None = Query(None, description="Filter t
 
 
 @router.get("/tables/{dataset_id}/{table_id}", response_model=TableDetails, operation_id="describe_bigquery_table")
-async def describe_table(dataset_id: str, table_id: str):
+async def describe_table(dataset_id: str, table_id: str, client: bigquery.Client = Depends(get_client)):
     """
     Get detailed information about a specific table using INFORMATION_SCHEMA.
 
@@ -66,8 +68,6 @@ async def describe_table(dataset_id: str, table_id: str):
         # Check if dataset is allowed
         if ALLOWED_DATASETS is not None and dataset_id not in ALLOWED_DATASETS:
             raise HTTPException(status_code=403, detail=f"Access to dataset '{dataset_id}' is not allowed")
-
-        client = get_client()
 
         # Query INFORMATION_SCHEMA.TABLES for table metadata
         schema_query = f"""

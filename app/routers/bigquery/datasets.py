@@ -1,21 +1,21 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from google.cloud import bigquery
 
+from app.clients.bigquery import get_client
 from app.config.settings import ALLOWED_DATASETS
 from app.schemas.bigquery import Dataset
-from app.utils.bigquery_client import get_client
 
 router = APIRouter()
 
 
 @router.get("/list_datasets", response_model=list[Dataset], operation_id="list_bigquery_datasets")
-def list_datasets():
+def list_datasets(client: bigquery.Client = Depends(get_client)):
     """
     List all datasets in the BigQuery project.
 
     If ALLOWED_DATASETS is configured, only returns those datasets.
     """
     try:
-        client = get_client()
         datasets = list(client.list_datasets())
         print(f"# datasets: {len(datasets)}")
 
