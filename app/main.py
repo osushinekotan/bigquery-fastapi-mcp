@@ -2,7 +2,7 @@ import httpx
 from fastapi import FastAPI
 from fastapi_mcp import FastApiMCP
 
-from app.config.settings import APP_HOST, APP_PORT, MCP_BASE_URL
+from app.config.settings import APP_HOST, APP_PORT
 from app.routers import health, sequential_thinking
 from app.routers.bigquery import datasets, query, tables
 
@@ -27,12 +27,17 @@ async def root():
 
 mcp = FastApiMCP(
     app,  # Your FastAPI app
-    name="FastAPI-MCP-Servers",  # Name of the MCP server
-    base_url=MCP_BASE_URL or f"http://{APP_HOST}:{APP_PORT}",  # Base URL for the MCP server
-    http_client=httpx.AsyncClient(timeout=60),
+    name="Query FastAPI MCP",  # Name for the MCP server
+    http_client=httpx.AsyncClient(
+        timeout=60, base_url=f"http://{APP_HOST}:{APP_PORT}"
+    ),  # HTTP client for the MCP server
+    exclude_tags=[
+        "system",
+        "vector-search",
+        "delete",
+    ],  # Exclude tags from the MCP server
 )
 mcp.mount()
-
 
 if __name__ == "__main__":
     import uvicorn

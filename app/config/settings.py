@@ -19,6 +19,5 @@ ALLOWED_STATEMENTS: list[str] = ["SELECT"]
 
 
 # app config
-MCP_BASE_URL = os.getenv("MCP_BASE_URL")
 APP_HOST = os.getenv("APP_HOST", "127.0.0.1")
 APP_PORT = os.getenv("APP_PORT", "8000")
