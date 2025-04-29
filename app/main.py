@@ -49,12 +49,11 @@ mcp = FastApiMCP(
     app,  # Your FastAPI app
     name="Query FastAPI MCP",  # Name for the MCP server
     http_client=httpx.AsyncClient(
-        timeout=60, base_url=f"http://{APP_HOST}:{APP_PORT}"
+        timeout=60,
+        base_url=f"http://{APP_HOST}:{APP_PORT}",
     ),  # HTTP client for the MCP server
     exclude_tags=[
         "system",
-        "vector-search",
-        "delete",
     ],  # Exclude tags from the MCP server
 )
 mcp.mount()
