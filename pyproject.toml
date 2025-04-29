@@ -8,6 +8,7 @@ dependencies = [
     "fastapi>=0.115.9",
     "fastapi-mcp>=0.2.0",
     "google-cloud-bigquery>=3.31.0",
+    "hf-xet>=1.0.5",
     "pydantic>=2.11.3",
     "pydantic-settings>=2.8.1",
     "pytest>=8.3.5",
