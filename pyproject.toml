@@ -3,7 +3,7 @@ name = "fastapi-mcp-servers"
 version = "0.1.0"
 description = "FastAPI MCP Servers"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115.9",
     "fastapi-mcp>=0.2.0",
