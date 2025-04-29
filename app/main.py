@@ -54,6 +54,7 @@ mcp = FastApiMCP(
     ),  # HTTP client for the MCP server
     exclude_tags=[
         "system",
+        "bigquery",
     ],  # Exclude tags from the MCP server
 )
 mcp.mount()
